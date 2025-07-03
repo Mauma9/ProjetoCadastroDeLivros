@@ -253,9 +253,53 @@ void exibirEstatisticas(Lista *lista){
     /*ponteiros para livros*/
     Livro *livroMaiorAvaliacao = lista->cabeca;
     Livro *livroMenorAvaliacao = lista->cabeca;
+    Livro *livroMaisAntigo = lista->cabeca;
+    Livro *livroMenosAntigo = lista->cabeca;
 
-    /*declaração de variaveis para */
-    char generos[100][50];
-    int contadorGeneros[100];
-    int totalGenerosUnicos = 0;
+    /*declaração de variaveis para 
+    a contagem de generos*/
+    char generos[100][50];//matriz para armazenar os generos
+    int contadorGeneros[100];//array para contar quantos livros de cada genero
+    int totalGenerosUnicos = 0;//separador para descontar repetidos
+
+    /*inicio do ponteiro que vai
+    percorrer a lista*/
+    Livro *atual = lista->cabeca;
+
+    /*inicio do loop*/
+    while (atual != NULL)
+    {
+        /*soma de avaliação e de paginas*/
+        somaAvaliação += atual->avaliacao;
+        totalDePaginas += atual->paginas;
+
+        /*loop para verificar a maior avaliação*/
+        if(atual->avaliacao > livroMaiorAvaliacao->avaliacao){
+            /*atribui os valores de atual em 
+            LivroMaiorAvaliacao*/
+            livroMaiorAvaliacao = atual;
+
+        }
+
+        /*loop para verificar a menor avaliação*/
+        if (atual->avaliacao < livroMenorAvaliacao->avaliacao)
+        {
+            livroMenorAvaliacao = atual;
+        }
+        
+        /*loop para verificar o mais antigo*/
+        if (atual->ano_publicacao < livroMaisAntigo->ano_publicacao)
+        {
+            livroMaisAntigo = atual;
+        }
+        
+        /*loop para verificar o menos antigo*/
+        if (atual->ano_publicacao > livroMenosAntigo->ano_publicacao)
+        {
+            livroMenosAntigo = atual;
+        }
+
+        
+    }
+    
 }
