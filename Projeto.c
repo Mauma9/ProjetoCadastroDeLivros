@@ -244,10 +244,9 @@ void exibirEstatisticas(Lista *lista){
     return;
     }
 
-
     /*declaração das variaveis*/
     int totalDeLivros = lista->tamanho;
-    float somaAvaliação = 0.0;
+    float somaAvaliacao = 0.0;
     int totalDePaginas = 0;
     
     /*ponteiros para livros*/
@@ -270,7 +269,7 @@ void exibirEstatisticas(Lista *lista){
     while (atual != NULL)
     {
         /*soma de avaliação e de paginas*/
-        somaAvaliação += atual->avaliacao;
+        somaAvaliacao += atual->avaliacao;
         totalDePaginas += atual->paginas;
 
         /*loop para verificar a maior avaliação*/
@@ -278,7 +277,6 @@ void exibirEstatisticas(Lista *lista){
             /*atribui os valores de atual em 
             LivroMaiorAvaliacao*/
             livroMaiorAvaliacao = atual;
-
         }
 
         /*loop para verificar a menor avaliação*/
@@ -299,7 +297,58 @@ void exibirEstatisticas(Lista *lista){
             livroMenosAntigo = atual;
         }
 
+        /*contador de generos*/
+        int generoExiste = 0;
+        for (int i = 0; i < totalGenerosUnicos; i++) {
+            if (strcmp(generos[i], atual->genero) == 0)/*função que compara 2 strings*/ {
+                contadorGeneros[i]++;//se for igual marca a posição e adiciona 1 nessa posição
+                generoExiste = 1;
+                break;
+            }
+        }
         
+        if (!generoExiste)/*se o genero n existir soma mais um no generos unicos*/ {
+            strcpy(generos[totalGenerosUnicos], atual->genero);
+            contadorGeneros[totalGenerosUnicos] = 1;
+            totalGenerosUnicos++;
+        }
+        
+        atual = atual->proximo;
     }
+
+    /*encontra o genero mais comum, fora do loop while que tambem contava os generos*/    
+    int indiceMaisComum = 0;
+    for (int i = 1; i < totalGenerosUnicos; i++) {
+        if (contadorGeneros[i] > contadorGeneros[indiceMaisComum]) {
+            indiceMaisComum = i;
+        }
+    }
+
+    /*calculo da media*/
+    float avaliacaoMedia = somaAvaliacao / totalDeLivros;
     
+    // Exibe todas as estatísticas
+    printf("\n=== ESTATISTICAS DA COLECAO ===\n");
+    printf("Quantidade total de livros: %d\n", totalDeLivros);
+    printf("Avaliacao media da colecao: %.2f\n", avaliacaoMedia);
+    printf("Total de paginas da colecao: %d\n", totalDePaginas);
+    
+    printf("\nLivro com maior avaliacao:\n");
+    printf("  - %s (Codigo: %d) - Nota: %.1f\n", 
+           livroMaiorAvaliacao->titulo, livroMaiorAvaliacao->codigo, livroMaiorAvaliacao->avaliacao);
+    
+    printf("Livro com menor avaliacao:\n");
+    printf("  - %s (Codigo: %d) - Nota: %.1f\n", 
+           livroMenorAvaliacao->titulo, livroMenorAvaliacao->codigo, livroMenorAvaliacao->avaliacao);
+    
+    printf("Genero mais comum: %s (%d livros)\n", 
+           generos[indiceMaisComum], contadorGeneros[indiceMaisComum]);
+    
+    printf("Livro mais antigo: %s (%d)\n", 
+           livroMaisAntigo->titulo, livroMaisAntigo->ano_publicacao);
+    
+    printf("Livro mais recente: %s (%d)\n", 
+           livroMenosAntigo->titulo, livroMenosAntigo->ano_publicacao);
+    
+    printf("===============================\n\n");
 }
