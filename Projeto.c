@@ -5,7 +5,7 @@
 #include <string.h>
 #include <time.h>
 
-// Deiiçao do nó(Livro)
+// Definiçao do nó(Livro)
 typedef struct Livro
 {
     int codigo;
@@ -47,7 +47,7 @@ int validarCodigo(Livro *lista,int codigo){
 }
 
 int validarAno(int ano_publicacao){
-    /*time_t é o tipo que amrmazena o epoch
+    /*time_t é o tipo que armazena o epoch
     agora é a variavel sendo criada do tipo
     time(NULL) é a função que vai armazenar 
     o tempo dentro da variavel agora */
@@ -465,4 +465,133 @@ void liberarLista(Lista *lista)
         free(temp);
     }
     free(lista);
+}
+
+int main()
+{
+    Lista *biblioteca = criarLista();//inicia a lista
+    int opcao;//variavel para navegar pelo menu
+    int codigoBusca;//variavel para buscar o codigo
+    Livro *livroEncontrado;//ponteiro para o livro encontrado
+
+    /*verificação de erro*/
+    if (biblioteca == NULL)
+    {
+        printf("Erro ao criar a lista!\n");
+        return 1;
+    }
+
+    printf("=== SISTEMA DE CADASTRO DE LIVROS ===\n");
+    printf("Bem-vindo ao gerenciador da sua colecao pessoal!\n\n");
+
+    /*loop para o menu*/
+    do
+    {
+        /* Exibir menu*/
+        printf("\n=== MENU PRINCIPAL ===\n");
+        printf("1. Cadastrar livro\n");
+        printf("2. Listar todos os livros\n");
+        printf("3. Buscar livro por codigo\n");
+        printf("4. Exibir estatisticas da colecao\n");
+        printf("5. Remover livro\n");
+        printf("6. Sair e liberar a memoria\n");
+        printf("Escolha uma opcao: ");
+        
+        scanf("%d", &opcao);
+        getchar(); // Limpar buffer
+        
+        /*switch para selecionar a opção*/
+        switch (opcao)
+        {
+            case 1:
+                printf("\n=== CADASTRAR LIVRO ===\n");
+                if (cadastrarLivro(biblioteca) != NULL)
+                {
+                    printf("Livro cadastrado com sucesso!\n");
+                }
+                else
+                {
+                    printf("Erro ao cadastrar livro!\n");
+                }
+                break;
+                
+            case 2:
+                printf("\n=== LISTA DE LIVROS ===\n");
+                listarLivros(biblioteca);
+                break;
+                
+            case 3:
+                printf("\n=== BUSCAR LIVRO ===\n");
+                printf("Digite o codigo do livro: ");
+                scanf("%d", &codigoBusca);
+                getchar(); // Limpar buffer
+                
+                livroEncontrado = buscar(biblioteca, codigoBusca);
+                if (livroEncontrado != NULL)
+                {
+                    printf("\nLivro encontrado:\n");
+                    printf("Codigo: %d\n", livroEncontrado->codigo);
+                    printf("Titulo: %s\n", livroEncontrado->titulo);
+                    printf("Autor: %s\n", livroEncontrado->autor);
+                    printf("Genero: %s\n", livroEncontrado->genero);
+                    printf("Ano de publicacao: %d\n", livroEncontrado->ano_publicacao);
+                    printf("Nota: %.1f\n", livroEncontrado->avaliacao);
+                    printf("Paginas: %d\n", livroEncontrado->paginas);
+                    
+                    // Exibir classificação
+                    if(livroEncontrado->avaliacao >= 9.0){
+                        printf("Classificacao: Excelente\n");
+                    } else if(livroEncontrado->avaliacao >= 7.0){
+                        printf("Classificacao: Bom\n");
+                    } else if(livroEncontrado->avaliacao >= 5.0){
+                        printf("Classificacao: Regular\n");
+                    } else {
+                        printf("Classificacao: Ruim\n");
+                    }
+                }
+                else
+                {
+                    printf("Livro com codigo %d nao encontrado!\n", codigoBusca);
+                }
+                break;
+                
+            case 4:
+                printf("\n=== ESTATISTICAS DA COLECAO ===\n");
+                exibirEstatisticas(biblioteca);
+                break;
+                
+            case 5:
+                printf("\n=== REMOVER LIVRO ===\n");
+                printf("Digite o codigo do livro a ser removido: ");
+                scanf("%d", &codigoBusca);
+                getchar(); // Limpar buffer
+                
+                if (remover(biblioteca, codigoBusca))
+                {
+                    printf("Operacao concluida!\n");
+                }
+                break;
+                
+            case 6:
+                printf("\n=== SAINDO DO SISTEMA ===\n");
+                printf("Obrigado por usar o Sistema de Cadastro de Livros!\n");
+                liberarLista(biblioteca);
+                printf("Memoria liberada com sucesso. Ate logo!\n");
+                break;
+                
+            default:
+                printf("\nOpcao invalida! Escolha uma opcao entre 1 e 6.\n");
+                break;
+        }
+        
+        // Pausa para melhor experiência do usuário (opcional)
+        if (opcao != 6)
+        {
+            printf("\nPressione ENTER para continuar...");
+            getchar();
+        }
+        
+    } while (opcao != 6);
+
+    return 0;
 }
