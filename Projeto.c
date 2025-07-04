@@ -30,7 +30,7 @@ typedef struct Lista
 int validarCodigo(Livro *lista,int codigo){
     //valida se o codigo é um numero inteiro maior q 0
      if(codigo <=0 ){
-        printf("Digite um codigo valido!");
+        printf("Digite um codigo valido!\n");
         return 0;
     }
 
@@ -38,7 +38,7 @@ int validarCodigo(Livro *lista,int codigo){
 
    while(atual != NULL){//procura em todos os nós até achar o NULL
     if(atual->codigo == codigo){//compara o codigo inserido com codigos armazenados
-        printf("O codigo já esta em uso, digite um codigo valido!");
+        printf("O codigo já esta em uso, digite um codigo valido!\n");
         return 0;
     }
     atual = atual->proximo;// passa para o proximo
@@ -97,7 +97,7 @@ Lista *criarLista()
     Lista *listaDeLivrosCadastrados = (Lista*)malloc(sizeof(Lista));
     if (listaDeLivrosCadastrados == NULL)
     {
-        printf("erro");
+        printf("Erro, lista vazia!\n");
         return NULL;
     }
 
@@ -119,61 +119,61 @@ Livro* cadastrarLivro(Lista *listaDeLivrosCadastrados)
     //verificação para saber se o novo livro é valido
     if (novoLivro == NULL)
     {
-        printf("erro");
+        printf("Erro, lista vazia!\n");
         return NULL;
     }
 
 
     // adicionar valores
     do{
-        printf("Digite o codigo do livro:");
+        printf("Digite o codigo do livro:\n");
         scanf("%d",&codigoTemp);
         getchar(); /* consome o \n restante do scanf (evita bugs com o fgets subsequente)*/
         if(!validarCodigo(listaDeLivrosCadastrados->cabeca, codigoTemp)){
-            printf("Erro, digite um codigo valido!");
+            printf("Erro, digite um codigo valido!\n");
         }
     }while (!validarCodigo(listaDeLivrosCadastrados->cabeca, codigoTemp));
     
     novoLivro->codigo = codigoTemp;
 
-    printf("Digite o titulo do livro:");
+    printf("Digite o titulo do livro:\n");
     fgets(novoLivro->titulo, sizeof(novoLivro->titulo), stdin);
     /*linha para mitigar o bug causado pelo enter precionado para
     finalizar a entrada, que o fgets le e armazena junto da string
     causando uma linha extra na consulta da string*/
     novoLivro->titulo[strcspn(novoLivro->titulo, "\n")] = '\0';
 
-    printf("Digite o autor do livro:");
+    printf("Digite o autor do livro:\n");
     fgets(novoLivro->autor, sizeof(novoLivro->autor), stdin);
     novoLivro->autor[strcspn(novoLivro->autor, "\n")] = '\0';
 
-    printf("Digite o genero do livro:");
+    printf("Digite o genero do livro:\n");
     fgets(novoLivro->genero, sizeof(novoLivro->genero), stdin);
     novoLivro->genero[strcspn(novoLivro->genero, "\n")] = '\0';
 
     do{
-    printf("Digite o ano de publicação:");
+    printf("Digite o ano de publicação:\n");
     scanf("%d",&anoTemp);
     if(!validarAno(anoTemp)){
-        printf("Erro, tente novamente!");
+        printf("Erro, tente novamente!\n");
     }
     } while(!validarAno(anoTemp));
     novoLivro->ano_publicacao = anoTemp;
 
     do{
-        printf("Digite a nota de avaliacao do livro:");
+        printf("Digite a nota de avaliacao do livro:\n");
         scanf("%f", &avaliacaoTemp);
         if(!validarAvaliacao(avaliacaoTemp)){
-            printf("Erro, digite uma nota entre 0.0 e 10.0");
+            printf("Erro, digite uma nota entre 0.0 e 10.0\n");
         }
     } while (!validarAvaliacao(avaliacaoTemp));
     novoLivro->avaliacao = avaliacaoTemp;
 
 do{
-    printf("Digite a quantidade de paginas do livro:");
+    printf("Digite a quantidade de paginas do livro:\n");
     scanf("%d",&paginasTemp) ;
     if(!validarPaginas(paginasTemp)){
-        printf("Erro, digite uma quantidade valida de paginas!");
+        printf("Erro, digite uma quantidade valida de paginas!\n");
     }
     } while(!validarPaginas(paginasTemp));
     novoLivro->paginas = paginasTemp;
@@ -219,7 +219,7 @@ Livro *buscar(Lista *lista, int codigo)
 {
     if (lista == NULL)
     {
-        printf("erro");
+        printf("Erro, lista vazia!\n");
         return NULL;
     }
 
@@ -327,7 +327,7 @@ void exibirEstatisticas(Lista *lista){
     /*calculo da media*/
     float avaliacaoMedia = somaAvaliacao / totalDeLivros;
     
-    // Exibe todas as estatísticas
+    /*parte de print das estatisticas coletadas pela função*/
     printf("\n=== ESTATISTICAS DA COLECAO ===\n");
     printf("Quantidade total de livros: %d\n", totalDeLivros);
     printf("Avaliacao media da colecao: %.2f\n", avaliacaoMedia);
@@ -351,4 +351,118 @@ void exibirEstatisticas(Lista *lista){
            livroMenosAntigo->titulo, livroMenosAntigo->ano_publicacao);
     
     printf("===============================\n\n");
+}
+
+int remover(Lista *lista, int codigoAlvo)
+{
+    /*adicionar variavel para confirmador*/
+    int confirmador = 0;
+
+
+    if (lista == NULL || lista->cabeca == NULL)
+    {
+        printf("Erro, lista vazia!");
+        return 0;
+    }
+
+    /*Caso especial: remover o primeiro elemento*/
+        if (lista->cabeca->codigo == codigoAlvo)
+        {
+            printf("Livro encontrado:\n");
+            printf("Codigo: %d\nTitulo: %s\nAutor: %s\nGenero: %s\nAno de publicacao: %d\nNota: %.1f\nPaginas: %d\n",
+                lista->cabeca->codigo, lista->cabeca->titulo, lista->cabeca->autor, 
+                lista->cabeca->genero, lista->cabeca->ano_publicacao, 
+                lista->cabeca->avaliacao, lista->cabeca->paginas);
+            
+            printf("Deseja remover este livro?\n0 = nao / 1 = sim\n");
+            scanf("%d", &confirmador);
+            getchar();
+
+            /*validação do confirmador*/
+            if (confirmador != 0 && confirmador != 1) {
+            printf("Opcao invalida. Remocao cancelada.\n");
+            return 0;
+            }
+
+            if (confirmador == 1)
+            {
+                Livro *temp = lista->cabeca;
+                lista->cabeca = lista->cabeca->proximo;
+                free(temp);
+                lista->tamanho--;
+                printf("Livro removido com sucesso!\n");
+                return 1;
+            }
+            else
+            {
+                printf("Remocao cancelada.\n");
+                return 0;
+            }
+        }
+
+    // começar da cabeça para encontrar o nó anterior ao que sera removido
+    Livro *anterior = lista->cabeca;
+    Livro *atual = anterior->proximo;
+
+    while (atual != NULL)
+    {
+
+        
+
+        if (atual->codigo == codigoAlvo)
+        {
+            printf("Livro encontrado:\n");
+            printf("Codigo: %d\nTitulo: %s\nAutor: %s\nGenero: %s\nAno de publicacao: %d\nNota: %.1f\nPaginas: %d\n",
+                atual->codigo, atual->titulo, atual->autor, 
+                atual->genero, atual->ano_publicacao, 
+                atual->avaliacao, atual->paginas);
+            
+            printf("Deseja remover este livro?\n0 = nao / 1 = sim\n");
+            scanf("%d", &confirmador);
+            getchar();
+
+            /*validação do confirmador*/
+            if (confirmador != 0 && confirmador != 1) {
+            printf("Opcao invalida. Remocao cancelada.\n");
+            return 0;
+            }
+            
+            if (confirmador == 1)
+            {
+            // conectar o nó anterior para o proximo nó pulando o atual
+            anterior->proximo = atual->proximo;
+            free(atual);
+            lista->tamanho--;
+            printf("Livro removido com sucesso!\n");
+            return 1; // sucesso
+            }
+            else
+            {
+                printf("Remocao cancelada.\n");
+                return 0;
+            }
+        }
+        anterior = atual;
+        atual = atual->proximo;
+    }
+    printf("Erro, codigo nao encontrado!");
+    return 0; // não encontrado
+}
+
+void liberarLista(Lista *lista)
+{
+    if (lista == NULL)
+    {
+        printf("Erro, lista vazia!");
+        return;
+    }
+
+    Livro *atual = lista->cabeca;
+    while (atual != NULL)
+    {
+        Livro *temp = atual;
+        atual = atual->proximo;
+        free(temp);
+    }
+    free(lista);
 }
