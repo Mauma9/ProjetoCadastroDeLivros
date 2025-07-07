@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <ctype.h>
 
 // Definiçao do nó(Livro)
 typedef struct Livro
@@ -21,12 +22,40 @@ typedef struct Livro
 // definição da lista com nome cabeça
 typedef struct Lista
 {
-    Livro* cabeca;
+	Livro* cabeca;
     int tamanho;
 } Lista;
 
+/*Função para validar se uma string contém apenas números*/
+int isNumeroValido(char *str) {
+    
+    if (str == NULL || strlen(str) == 0) {
+        return 0;
+    }
+    
+    // Remove espaços em branco no início
+    while (*str == ' ' || *str == '\t') {
+        str++;
+    }
+    
+    // Verifica se string está vazia após remover espaços
+    if (*str == '\0') {
+        return 0;
+    }
+    
+    // Verifica se todos os caracteres são dígitos
+    for (int i = 0; str[i] != '\0'; i++) {
+        /*isdigit usado para verificar se a string 
+    tem algo além de numeros(Retorna valor diferente de 0 se o caractere é um dígito (0-9))*/
+        if (!isdigit(str[i])) {
+            return 0;
+        }
+    }
+    return 1;
+}
 
 //Validações
+
 int validarCodigo(Livro *lista,int codigo){
     //valida se o codigo é um numero inteiro maior q 0
      if(codigo <=0 ){
@@ -54,7 +83,7 @@ int validarAno(int ano_publicacao){
     time_t agora = time(NULL);
 
     /*verifica se o time falhou*/
-    if(agora == -1){  
+    if(agora == -1 ){  
         return 0;
     }
 
@@ -113,6 +142,8 @@ Livro* cadastrarLivro(Lista *listaDeLivrosCadastrados)
     int anoTemp;
     float avaliacaoTemp;
     int paginasTemp;
+    char entradaAno[20]; // Buffer para ler a entrada do ano como string
+    
     //locação de espaço para o novo livro a ser adicionado
     Livro* novoLivro = (Livro*)malloc(sizeof(Livro));
 
@@ -122,7 +153,6 @@ Livro* cadastrarLivro(Lista *listaDeLivrosCadastrados)
         printf("Erro, lista vazia!\n");
         return NULL;
     }
-
 
     // adicionar valores
     do{
@@ -151,13 +181,22 @@ Livro* cadastrarLivro(Lista *listaDeLivrosCadastrados)
     fgets(novoLivro->genero, sizeof(novoLivro->genero), stdin);
     novoLivro->genero[strcspn(novoLivro->genero, "\n")] = '\0';
 
+    // VALIDAÇÃO DO ANO COM STRING 
     do{
-    printf("Digite o ano de publicação:\n");
-    scanf("%d",&anoTemp);
-    if(!validarAno(anoTemp)){
-        printf("Erro, tente novamente!\n");
-    }
-    } while(!validarAno(anoTemp));
+        printf("Digite o ano de publicação:\n");
+        fgets(entradaAno, sizeof(entradaAno), stdin);
+        entradaAno[strcspn(entradaAno, "\n")] = '\0'; // Remove o \n
+        
+        if(!isNumeroValido(entradaAno)){
+            printf("Erro, digite apenas números!\n");
+        } else {
+            anoTemp = atoi(entradaAno);
+            if(!validarAno(anoTemp)){
+                printf("Erro, tente novamente!\n");
+            }
+        }
+    } while(!isNumeroValido(entradaAno) || !validarAno(anoTemp));
+    
     novoLivro->ano_publicacao = anoTemp;
 
     do{
