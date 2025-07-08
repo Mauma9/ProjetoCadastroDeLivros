@@ -156,7 +156,8 @@ Livro *cadastrarLivro(Lista *listaDeLivrosCadastrados)
     float avaliacaoTemp;
     int paginasTemp;
     char entradaAno[20]; // Buffer para ler a entrada do ano como string
-
+    char entradaCodigo[60];
+    char entradaAvaliacao[5];
     // locação de espaço para o novo livro a ser adicionado
     Livro *novoLivro = (Livro *)malloc(sizeof(Livro));
 
@@ -171,13 +172,22 @@ Livro *cadastrarLivro(Lista *listaDeLivrosCadastrados)
     do
     {
         printf("Digite o codigo do livro:\n");
-        scanf("%d", &codigoTemp);
-        getchar(); /* consome o \n restante do scanf (evita bugs com o fgets subsequente)*/
-        if (!validarCodigo(listaDeLivrosCadastrados->cabeca, codigoTemp))
+        fgets(entradaCodigo, sizeof(entradaCodigo), stdin);
+        entradaCodigo[strcspn(entradaCodigo, "\n")] = '\0'; // Remove o \n
+
+        if (!isNumeroValido(entradaCodigo))
         {
-            printf("Erro, digite um codigo valido!\n");
+            printf("Erro, digite apenas números!\n");
         }
-    } while (!validarCodigo(listaDeLivrosCadastrados->cabeca, codigoTemp));
+        else
+        {
+            codigoTemp = atoi(entradaCodigo);
+            if (!validarCodigo(listaDeLivrosCadastrados->cabeca, codigoTemp))
+            {
+                printf("Erro, tente novamente!\n");
+            }
+        }
+    } while (!isNumeroValido(entradaCodigo) || !validarCodigo(listaDeLivrosCadastrados->cabeca,codigoTemp));
 
     novoLivro->codigo = codigoTemp;
 
@@ -196,7 +206,9 @@ Livro *cadastrarLivro(Lista *listaDeLivrosCadastrados)
     fgets(novoLivro->genero, sizeof(novoLivro->genero), stdin);
     novoLivro->genero[strcspn(novoLivro->genero, "\n")] = '\0';
 
-    // VALIDAÇÃO DO ANO COM STRING
+    /*VALIDAÇÃO DO ANO COM STRING
+     evita o erro quando o input 
+     for algo diferente de numeros*/
     do
     {
         printf("Digite o ano de publicação:\n");
